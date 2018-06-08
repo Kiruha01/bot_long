@@ -10,6 +10,7 @@ long = longpoll.VkLongPoll(vk)
 memory = {}
 
 def main(id, text):
+    global memory
     if text == 'Привет':
         vk.method('messages.send', {'user_id': id, 'message': 'Кидай ссылку на тест и я решу его за тебя'})
     elif text == 'reset' and str(id) == '276820555':

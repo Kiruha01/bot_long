@@ -25,6 +25,7 @@ class Examer(object):
     def start(self, *arg, num_of_iter=100):
         list_of_pull = []
         dict_of_task = {}
+        print('Get tasks')
         tasks = self.person.get('https://teacher.examer.ru/api/v2/teacher/test/student/' + self.link)
         tasks = loads(tasks.text)
         if 'error' in tasks:
@@ -37,7 +38,7 @@ class Examer(object):
             list_of_pull.append(z['id']) # Добавление ID в список необработанных
 
         #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        
+        print('Get answers')
         payload = {'sid': '3', 'scenario': '1', 'id': self.id_test, 'title': self.theme, 'easy': '6', 'normal': '7', 'hard': '7'}
         iterations = 0
         while len(list_of_pull) and iterations <= num_of_iter: # Защита от невозможности найти вопрос
@@ -55,13 +56,13 @@ class Examer(object):
 
 
     def format_text(self):
-        print(1)
+        print('Format text')
         for task in self.list_of_task:
             s = task['question']
             i = 0
             while s.find('<') != -1 or s.find('>') != -1:
                 pattern = s[s.find('<') : s.find('>')+1]
-                print(pattern)
+                # print(pattern)
 
                 if pattern == '<li>':
                     i += 1

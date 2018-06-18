@@ -1,4 +1,4 @@
-token = '6be1dc7d81306eaa2394e1b512fa2ce7b6ef4432aef65ac1523513ec6495e2b753fbf06afc305d565ce6b'
+token = 'e4276027b3dd1635f80f2e627bd085200e3018f51fa3cb5ce462797f1c420c32f082091a5560ba1bc5b38'
 
 import vk_api
 from vk_api import longpoll
@@ -6,6 +6,7 @@ from examer import Examer
 
 vk = vk_api.vk_api.VkApi(token=token)
 long = longpoll.VkLongPoll(vk)
+ex = Examer('arkadiy@p33.org', 'zabylkto01')
 
 memory = {}
 
@@ -22,7 +23,6 @@ def main(id, text):
             for msg in memory[link]:
                 vk.method('messages.send', {'user_id': id, 'message': msg})
         else:
-            ex = Examer('arkadiy@p33.org', 'zabylkto01')
             ex.set_link(text)
             try:
                 ex.start()

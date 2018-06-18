@@ -16,11 +16,11 @@ def main(id, text):
         vk.method('messages.send', {'user_id': id, 'message': 'Кидай ссылку на тест и я решу его за тебя'})
     elif text == 'reset' and str(id) == '276820555':
         memory = {}
-        print('Read from memory')
         vk.method('messages.send', {'user_id': '276820555', 'message': 'ok'})
     else:
         link = text.split('/')[-1]
         if link in memory:
+            print('Read from memory')
             for msg in memory[link]:
                 vk.method('messages.send', {'user_id': id, 'message': msg})
         else:

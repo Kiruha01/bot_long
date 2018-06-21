@@ -1,5 +1,5 @@
 token = 'e4276027b3dd1635f80f2e627bd085200e3018f51fa3cb5ce462797f1c420c32f082091a5560ba1bc5b38'
-
+list_id = [] # Для уведомления после флуда
 import vk_api
 from vk_api import longpoll
 
@@ -34,6 +34,10 @@ def gen_keyboard(data):
 def main(id, text):
     global memory
     global keyboard
+
+    if list_id:
+        for iii in list_id:
+            vk.method('messages.send', {'user_id': iii, 'message': 'Сорян, меня забанили за флуд)\nТеперь всё ок'})
 
     if text == 'Начать':
         # this = []
@@ -100,6 +104,12 @@ def main(id, text):
 
 
 if __name__ == '__main__':
+    from time import sleep
+
+
     for event in long.listen():
         if event.text and not event.from_me:
-            main(event.user_id, event.text)
+            try:
+                main(event.user_id, event.text)
+            except:
+                list_id.append(event.user_id)

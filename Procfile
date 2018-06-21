@@ -1,1 +1,1 @@
-worker: python3 bot_long.py
+worker: python3.6 bot_long.py

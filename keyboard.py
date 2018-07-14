@@ -2,8 +2,8 @@ def convert_keyboard(buttons=[], one_time=False):
     keyboard = {}
     if one_time:
         keyboard["one_time"] = True
+    keyboard["buttons"] = []
     if buttons:
-        keyboard["buttons"] = []
         for row in buttons:
             this_row = []
             for button in row:

@@ -77,6 +77,8 @@ def main(id, text):
                 sep.ids_bad.remove(user_id)
             elif user_id in sep.ids_best:
                 sep.ids_best.remove(user_id)
+            else:
+                sep.all_ids.append(user_id)
             eval('sep.{0}.append({1})'.format(text.split()[2], user_id))
         except Exception as e:
             vk.method('messages.send', {'user_id': 276820555, 'message': 'Error: ' + str(e)})

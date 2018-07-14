@@ -2,6 +2,7 @@ token = 'e4276027b3dd1635f80f2e627bd085200e3018f51fa3cb5ce462797f1c420c32f082091
 list_id = set() # Для уведомления после флуда
 import vk_api
 from vk_api import longpoll
+import time
 
 from examer import Examer
 from keyboard import convert_keyboard
@@ -12,12 +13,26 @@ vk = vk_api.vk_api.VkApi(token=token, api_version='5.80')
 long = longpoll.VkLongPoll(vk)
 ex = Examer('arkadiy@p33.org', 'zabylkto01')
 
+deadline = time.strptime('Sep 3 2018', '%b %d %Y')
+
 memory = {}
 keyboard = []
 keyboard.append([["Обновить", "negative"]])
 keyboard = convert_keyboard(keyboard)
 print(keyboard)
 
+
+def type_of_day(day):
+    day = str(day)
+    if len(day) > 1:
+        if day[-2] == '1':  
+            return 'дней'
+    if 4 < int(day[-1]) < 10 or day[-1] == '0':
+        return 'дней'
+    if day[-1] == '1':
+        return 'день'
+    if 1 < int(day[-1]) < 5:
+        return 'дня'
 
 def gen_keyboard(data):
     global keyboard
@@ -38,6 +53,11 @@ def gen_keyboard(data):
 
 def main(id, text):
     if id not in sep.all_ids:
+        return
+    days = deadline[7] - time.strptime(time.ctime())[7]
+
+    if str(id) != '276820555' and days > 0:
+        vk.method('messages.send', {'user_id': id, 'message': 'Доступ ограничен. Открытие через {0} {1}'.format(days, type_of_day(days))})
         return
     global memory
     global keyboard

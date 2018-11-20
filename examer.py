@@ -1,11 +1,20 @@
 import mechanicalsoup
 from json import loads
 
+def convertDif(grade):
+    if grade == 'easy':
+        return 1
+    elif grade == 'normal':
+        return 2
+    else:
+        return 3
+
 class Examer(object):
     def __init__(self, login=None, password=None):
         self.list_of_task = []
         if login and password:
             self.auth(login, password)
+        self.score = 'НЕТДАННЫХ'
 
 
     def auth(self, login, passw):
@@ -32,9 +41,11 @@ class Examer(object):
             raise ArithmeticError
         self.theme = tasks['test']['title'] # Тема теста
         self.id_test = str(tasks['test']['scenarioId']) # ID теста
+        self.score = str(tasks['test']['score'])
+        
 
         for z in tasks['test']['tasks']: # Перебор в заданиях 
-            dict_of_task[z['id']] = {'question': z['task_text'], 'answer': None}
+            dict_of_task[z['id']] = {'question': '🌚'*convertDif(z['difficult']) + '\n' + z['task_text'], 'answer': None}
             list_of_pull.append(z['id']) # Добавление ID в список необработанных
 
         #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

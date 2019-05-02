@@ -103,6 +103,7 @@ def main(id, text):
             for msg in sep.separation(id, memory[link][0]):
                 vk.method('messages.send', {'user_id': id, 'message': msg})
             vk.method('messages.send', {'user_id': id, 'message': 'Всего баллов: ' + memory[link][1], 'keyboard': keyboard})
+            vk.method('messages.send', {'user_id': id, 'message': 'time: ' + str(memory[link][2]/30)})
             ex.list_of_task = []
         else:
             ex.set_link(text)
@@ -115,7 +116,7 @@ def main(id, text):
                 list_ = []
                 for task_id in ex.list_of_task:
                     list_.append(task_id['question'] + '\nОтвет: ' + task_id['answer'])
-                memory[link] = [list_, ex.score]
+                memory[link] = [list_, ex.score, ex.time]
 
                 gen_keyboard(memory)
 

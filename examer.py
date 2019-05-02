@@ -42,10 +42,12 @@ class Examer(object):
         self.theme = tasks['test']['title'] # Тема теста
         self.id_test = str(tasks['test']['scenarioId']) # ID теста
         self.score = str(tasks['test']['score'])
+        self.time = 0
         
 
         for z in tasks['test']['tasks']: # Перебор в заданиях 
             dict_of_task[z['id']] = {'question': '🌚'*convertDif(z['difficult']) + '\n' + z['task_text'], 'answer': None}
+            self.time += float(z['avg_time'])
             list_of_pull.append(z['id']) # Добавление ID в список необработанных
 
         #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

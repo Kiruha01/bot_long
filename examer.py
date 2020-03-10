@@ -100,7 +100,7 @@ class Examer(object):
                     
 
 if __name__ == '__main__':
-    ex = Examer('arkadiy@p33.org', 'zabylkto01')
+    ex = Examer('LOGIN@p33.org', 'PASS')
     err = True
     while err:
         ex.set_link(input('Your link: '))

@@ -7,7 +7,7 @@ lxml==4.6.3
 MechanicalSoup==0.10.0
 requests==2.20.0
 six==1.11.0
-urllib3==1.24.2
+urllib3==1.26.5
 vk-api==10.1
 imbox==0.9.5
 itsdangerous==0.24

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -ex
+
+autoflake --recursive --in-place \
+  --remove-all-unused-imports \
+  --ignore-init-module-imports \
+  app
+isort --profile black app
+black app

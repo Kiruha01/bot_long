@@ -17,6 +17,7 @@ async def message_handler(message: types.Message) -> None:
 
         if "examer.ru" not in message.text or not message.text.startswith("http"):
             await bot.send_message(chat_id=message.from_user.id, text="Неверная ссылка")  # type: ignore
+            return
 
         if not await controller.check_auth():
             await controller.auth()

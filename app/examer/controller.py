@@ -1,8 +1,8 @@
 import asyncio
 import hashlib
 
-from aiohttp import ClientSession
 from bs4 import BeautifulSoup
+from httpx import AsyncClient
 from loguru import logger
 
 from app.examer.exception import (
@@ -21,18 +21,18 @@ class ExamerController:
         self.MAX_REQUESTS = 20
         self.SIGN_POSTFIX = "Ic8_31"
         self.BASE_URL = "https://examer.ru/"
-        self.client = ClientSession(
+        self.client = AsyncClient(
             base_url=self.BASE_URL,
             headers={"Referer": self.BASE_URL},
         )
 
     async def check_auth(self) -> bool:
-        async with self.client.get("/api/v2/user") as resp:
-            logger.info(f"Check Examer auth: {resp.status}")
-            resp_data = await resp.json()
-            if not resp_data.get("profile", {}).get("is_teacher"):
-                logger.error("User is not teacher")
-                return False
+        resp = await self.client.get("/api/v2/user")
+        logger.info(f"Check Examer auth: {resp.status_code}")
+        resp_data = resp.json()
+        if not resp_data.get("profile", {}).get("is_teacher"):
+            logger.error("User is not teacher")
+            return False
 
         return True
 
@@ -51,38 +51,44 @@ class ExamerController:
         :raises TeacherError: пользователь не является учителем
         """
         logger.info(f"LogIn to Examer as {email[:3]}...{email[-5:]}")
-        async with self.client.get("/") as resp:
-            if resp.status != 200:
-                logger.error(f"Examer error response: {resp.status}")
-                logger.error(await resp.text())
-                raise LoginError()
+        resp = await self.client.get("/")
+        if resp.status_code != 200:
+            logger.error(f"Examer error response: {resp.status_code}")
+            logger.error(resp.text)
+            raise LoginError()
 
-            soup = BeautifulSoup(await resp.text(), "html.parser")
+        soup = BeautifulSoup(resp.text, "html.parser")
 
         token = soup.find(id="login-form").find("input", attrs={"name": "_token"})[
             "value"
         ]
         params = self._prepare_auth_request_params(email, password, token)
 
-        async with self.client.post("/api/v2/login", data=params) as resp:
-            resp_data = await resp.json()
-            if not resp_data.get("success"):
-                logger.error(f"Examer error: {resp_data}")
-                if resp_data.get("error") == 3:
-                    logger.error("Wrong email or password")
-                    raise EmailPasswordError()
-                elif resp_data.get("error") == 101:
-                    logger.error("Sign error")
-                    raise SignError()
-                else:
-                    logger.error("Something went wrong. Login error")
-                    raise LoginError()
+        resp = await self.client.post("/api/v2/login", data=params)
 
-        async with self.client.get("/api/v2/user") as resp:
-            resp_data = await resp.json()
-            if not resp_data.get("profile", {}).get("is_teacher"):
-                logger.error("User is not teacher")
-                raise TeacherError()
+        if resp.status_code != 200:
+            logger.error(f"Examer error response: {resp.status_code}")
+            logger.error(resp.text)
+            raise LoginError()
+
+        resp_data = resp.json()
+        if not resp_data.get("success"):
+            logger.error(f"Examer error: {resp_data}")
+            if resp_data.get("error") == 3:
+                logger.error("Wrong email or password")
+                raise EmailPasswordError()
+            elif resp_data.get("error") == 101:
+                logger.error("Sign error")
+                raise SignError()
+            else:
+                logger.error("Something went wrong. Login error")
+                raise LoginError()
+
+        resp = await self.client.get("/api/v2/user")
+        resp_data = resp.json()
+        if not resp_data.get("profile", {}).get("is_teacher"):
+            logger.error("User is not teacher")
+            raise TeacherError()
 
         logger.info(f"Login as {email[:3]}...{email[-5:]} success")
 
@@ -93,16 +99,16 @@ class ExamerController:
         :return: ExamerText
         """
         logger.info(f"Get questions from {test_id}")
-        async with self.client.get("/api/v2/teacher/test/student/" + test_id) as resp:
-            if resp.status != 200:
-                logger.error(f"Examer error response: {resp.status}")
-                logger.error(await resp.text())
-                raise GettingTestError()
+        resp = await self.client.get("/api/v2/teacher/test/student/" + test_id)
+        if resp.status_code != 200:
+            logger.error(f"Examer error response: {resp.status_code}")
+            logger.error(resp.text)
+            raise GettingTestError()
 
-            resp_data = await resp.json()
-            if "error" in resp_data:
-                logger.error(resp_data["error"])
-                raise GettingTestError()
+        resp_data = resp.json()
+        if "error" in resp_data:
+            logger.error(resp_data["error"])
+            raise GettingTestError()
 
         test = ExamerTest(resp_data.get("test"))
         logger.info(f"For test {test_id} got {len(test.tasks)} questions")
@@ -133,15 +139,15 @@ class ExamerController:
             "hard": "12",
         }
 
-        async with self.client.post("/api/v2/teacher/test", data=payload) as resp:
-            data = await resp.json()
-            for task in data.get("tasks", []):
-                if task["id"] in test.unprocessed_tasks_id:
-                    test.tasks[task["id"]].answer = task["answer"]
-                    test.unprocessed_tasks_id.remove(task["id"])
+        resp = await self.client.post("/api/v2/teacher/test", data=payload)
+        data = resp.json()
+        for task in data.get("tasks", []):
+            if task["id"] in test.unprocessed_tasks_id:
+                test.tasks[task["id"]].answer = task["answer"]
+                test.unprocessed_tasks_id.remove(task["id"])
 
-            if len(test.unprocessed_tasks_id) == 0:
-                raise StopIteration
+        if len(test.unprocessed_tasks_id) == 0:
+            raise StopIteration
 
     def _prepare_auth_request_params(
         self, email: str, password: str, token: str

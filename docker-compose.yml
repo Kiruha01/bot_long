@@ -1,6 +1,8 @@
 services:
   bot:
-    image: tg_bot
+    image: kiruha01/tg_bot:1.0.1
     env_file:
       - .env
     restart: always
+    ports:
+      - "8000:8000"

@@ -266,6 +266,27 @@ toml = ["tomli (>=1.1.0)"]
 yaml = ["PyYAML"]
 
 [[package]]
+name = "beautifulsoup4"
+version = "4.12.3"
+description = "Screen-scraping library"
+optional = false
+python-versions = ">=3.6.0"
+files = [
+    {file = "beautifulsoup4-4.12.3-py3-none-any.whl", hash = "sha256:b80878c9f40111313e55da8ba20bdba06d8fa3969fc68304167741bbf9e082ed"},
+    {file = "beautifulsoup4-4.12.3.tar.gz", hash = "sha256:74e3d1928edc070d21748185c46e3fb33490f22f52a3addee9aee0f4f7781051"},
+]
+
+[package.dependencies]
+soupsieve = ">1.2"
+
+[package.extras]
+cchardet = ["cchardet"]
+chardet = ["chardet"]
+charset-normalizer = ["charset-normalizer"]
+html5lib = ["html5lib"]
+lxml = ["lxml"]
+
+[[package]]
 name = "black"
 version = "24.10.0"
 description = "The uncompromising code formatter."
@@ -308,6 +329,20 @@ colorama = ["colorama (>=0.4.3)"]
 d = ["aiohttp (>=3.10)"]
 jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
+
+[[package]]
+name = "bs4"
+version = "0.0.2"
+description = "Dummy package for Beautiful Soup (beautifulsoup4)"
+optional = false
+python-versions = "*"
+files = [
+    {file = "bs4-0.0.2-py2.py3-none-any.whl", hash = "sha256:abf8742c0805ef7f662dce4b51cca104cffe52b835238afc169142ab9b3fbccc"},
+    {file = "bs4-0.0.2.tar.gz", hash = "sha256:a48685c58f50fe127722417bae83fe6badf500d54b55f7e39ffe43b798653925"},
+]
+
+[package.dependencies]
+beautifulsoup4 = "*"
 
 [[package]]
 name = "certifi"
@@ -466,6 +501,27 @@ files = [
     {file = "frozenlist-1.4.1-py3-none-any.whl", hash = "sha256:04ced3e6a46b4cfffe20f9ae482818e34eba9b5fb0ce4056e4cc9b6e212d09b7"},
     {file = "frozenlist-1.4.1.tar.gz", hash = "sha256:c037a86e8513059a2613aaba4d817bb90b9d9b6b69aace3ce9c877e8c8ed402b"},
 ]
+
+[[package]]
+name = "gunicorn"
+version = "23.0.0"
+description = "WSGI HTTP Server for UNIX"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "gunicorn-23.0.0-py3-none-any.whl", hash = "sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d"},
+    {file = "gunicorn-23.0.0.tar.gz", hash = "sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec"},
+]
+
+[package.dependencies]
+packaging = "*"
+
+[package.extras]
+eventlet = ["eventlet (>=0.24.1,!=0.36.0)"]
+gevent = ["gevent (>=1.4.0)"]
+setproctitle = ["setproctitle"]
+testing = ["coverage", "eventlet", "gevent", "pytest", "pytest-cov"]
+tornado = ["tornado (>=0.2)"]
 
 [[package]]
 name = "h11"
@@ -1181,6 +1237,17 @@ files = [
 ]
 
 [[package]]
+name = "soupsieve"
+version = "2.6"
+description = "A modern CSS selector implementation for Beautiful Soup."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "soupsieve-2.6-py3-none-any.whl", hash = "sha256:e72c4ff06e4fb6e4b5a9f0f55fe6e81514581fca1515028625d0f299c602ccc9"},
+    {file = "soupsieve-2.6.tar.gz", hash = "sha256:e2e68417777af359ec65daac1057404a3c8a5455bb8abc36f1a9866ab1a51abb"},
+]
+
+[[package]]
 name = "starlette"
 version = "0.38.6"
 description = "The little ASGI library that shines."
@@ -1363,4 +1430,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "eaea73110bcdef92ac9a450959e480f6515146c436e812b0ce1c18c2a9bd33b6"
+content-hash = "719737a9d962524aa72b294783501e49baaf11481b4ac267ae678a277d9cfd2b"

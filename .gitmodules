@@ -1,0 +1,3 @@
+[submodule "examer"]
+	path = examer
+	url = https://github.com/Kiruha01/examer.git

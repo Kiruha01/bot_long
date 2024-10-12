@@ -1,0 +1,6 @@
+services:
+  bot:
+    image: tg_bot
+    env_file:
+      - .env
+    restart: always

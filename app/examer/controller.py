@@ -26,7 +26,7 @@ class ExamerController:
         self.client = None
         self.create_client()
 
-        self.cache = LRU(size=1)
+        self.cache = LRU(size=10)
 
     def create_client(self) -> None:
         self.client = AsyncClient(

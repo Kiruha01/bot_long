@@ -1,9 +1,11 @@
 import asyncio
 import hashlib
+from functools import lru_cache
 
 from bs4 import BeautifulSoup
 from httpx import AsyncClient
 from loguru import logger
+from lru import LRU
 
 from app.examer.exception import (
     EmailPasswordError,
@@ -21,6 +23,12 @@ class ExamerController:
         self.MAX_REQUESTS = 20
         self.SIGN_POSTFIX = "Ic8_31"
         self.BASE_URL = "https://examer.ru/"
+        self.client = None
+        self.create_client()
+
+        self.cache = LRU(size=1)
+
+    def create_client(self) -> None:
         self.client = AsyncClient(
             base_url=self.BASE_URL,
             headers={"Referer": self.BASE_URL},
@@ -37,7 +45,7 @@ class ExamerController:
         return True
 
     async def auth(
-        self, email: str = settings.EMAIL, password: str = settings.PASSWORD
+        self, email: str = settings.EMAILS[0], password: str = settings.PASSWORDS[0]
     ):
         """
         Метод входа в аккаунт
@@ -50,7 +58,7 @@ class ExamerController:
         :raises SignError: ошибка отправки запроса регистрации
         :raises TeacherError: пользователь не является учителем
         """
-        logger.info(f"LogIn to Examer as {email[:3]}...{email[-5:]}")
+        logger.info(f"LogIn to Examer as {email[:5]}...{email[email.find('@'):]}")
         resp = await self.client.get("/")
         if resp.status_code != 200:
             logger.error(f"Examer error response: {resp.status_code}")
@@ -90,7 +98,7 @@ class ExamerController:
             logger.error("User is not teacher")
             raise TeacherError()
 
-        logger.info(f"Login as {email[:3]}...{email[-5:]} success")
+        logger.info(f"Login as {email[:5]}...{email[email.find('@'):]} success")
 
     async def get_questions(self, test_id: str) -> ExamerTest:
         """
@@ -121,11 +129,16 @@ class ExamerController:
         :return: ExamerTest
         """
         test_id = link.split("/")[-1]
+        if self.cache.has_key(test_id):
+            return self.cache.get(test_id)
+
         test = await self.get_questions(test_id)
 
         tasks = [self._insert_answers_async(test) for _ in range(self.MAX_REQUESTS)]
 
         await asyncio.gather(*tasks, return_exceptions=True)
+
+        self.cache[test_id] = test
         return test
 
     async def _insert_answers_async(self, test: ExamerTest):

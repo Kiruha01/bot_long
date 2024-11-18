@@ -1,9 +1,13 @@
+from random import randint
+
 import loguru
 from aiogram import Dispatcher, types
 from aiogram.filters import Command
 
 from app.bot.bot import bot
 from app.examer.controller import controller
+from app.examer.schemas import ExamerTest
+from app.settings import settings
 
 dp = Dispatcher()
 
@@ -20,7 +24,9 @@ async def message_handler(message: types.Message) -> None:
             return
 
         if not await controller.check_auth():
-            await controller.auth()
+            controller.create_client()
+            user_id = randint(0, len(settings.EMAILS) - 1)
+            await controller.auth(settings.EMAILS[user_id], settings.PASSWORDS[user_id])
 
         await bot.send_message(chat_id=message.from_user.id, text="Ищу ответы....")  # type: ignore
 

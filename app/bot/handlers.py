@@ -42,7 +42,7 @@ async def message_handler(message: types.Message) -> None:
         )  # type: ignore
 
         for task in test.get_tasks():
-            await bot.send_message(chat_id=message.from_user.id, text=task.formatted_question)  # type: ignore
+            await bot.send_message(chat_id=message.from_user.id, text=task.formatted_question, parse_mode="Markdown")  # type: ignore
 
     except Exception as e:
         loguru.logger.opt(exception=e).error("Error processing message")

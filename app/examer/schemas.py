@@ -37,7 +37,7 @@ class Task:
     @property
     def formatted_question(self) -> str:
         return (
-            f"{'🌚' * self.difficult}\n" f"{self.question}\n\n" f"Ответ: {self.answer}"
+            f"{'🌚' * self.difficult}\n```\n{self.question}\n```\n\n" f"Ответ: `{self.answer}`"
         )
 
 
